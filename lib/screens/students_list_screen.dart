@@ -1,44 +1,31 @@
 import 'package:flutter/material.dart';
 
-enum RiskLevel { todos, alto, medio, bajo }
+enum RiskLevel { todos, bajo, medio, alto }
 
-extension RiskLevelExtension on RiskLevel {
-  String get label {
-    switch (this) {
-      case RiskLevel.todos:
-        return 'Todos';
-      case RiskLevel.alto:
-        return 'Riesgo alto';
-      case RiskLevel.medio:
-        return 'Riesgo medio';
-      case RiskLevel.bajo:
-        return 'Riesgo bajo';
-    }
-  }
-
+extension RiskLevelStyle on RiskLevel {
   Color get color {
     switch (this) {
       case RiskLevel.todos:
         return const Color(0xFF1565C0);
-      case RiskLevel.alto:
-        return const Color(0xFFC62828);
-      case RiskLevel.medio:
-        return const Color(0xFFE65100);
       case RiskLevel.bajo:
         return const Color(0xFF2E7D32);
+      case RiskLevel.medio:
+        return const Color(0xFFF9A825);
+      case RiskLevel.alto:
+        return const Color(0xFFC62828);
     }
   }
 
-  Color get backgroundColor {
+  String get label {
     switch (this) {
       case RiskLevel.todos:
-        return const Color(0xFFE3F2FD);
-      case RiskLevel.alto:
-        return const Color(0xFFFFEBEE);
-      case RiskLevel.medio:
-        return const Color(0xFFFFF3E0);
+        return 'Todos';
       case RiskLevel.bajo:
-        return const Color(0xFFE8F5E9);
+        return 'Riesgo bajo';
+      case RiskLevel.medio:
+        return 'Riesgo medio';
+      case RiskLevel.alto:
+        return 'Riesgo alto';
     }
   }
 }
@@ -49,7 +36,6 @@ class Student {
   final String name;
   final String grade;
   final RiskLevel risk;
-  final String avatarUrl;
   final double attendancePercentage;
   final int tardinessCount;
 
@@ -58,7 +44,6 @@ class Student {
     required this.name,
     required this.grade,
     required this.risk,
-    this.avatarUrl = '',
     required this.attendancePercentage,
     required this.tardinessCount,
   });
@@ -74,12 +59,13 @@ class StudentsListScreen extends StatefulWidget {
 }
 
 class _StudentsListScreenState extends State<StudentsListScreen> {
-  int _currentTabIndex = 1; // 1 = Estudiantes
+  int _currentTabIndex = 1;
   RiskLevel _selectedRiskFilter = RiskLevel.todos;
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
-  // Lista de datos simulados basada en el diseño del prototipo
+  // TODO: reemplazar por datos reales desde la base de datos o servicio correspondiente.
+  // Aquí se deberían insertar los datos faltantes recuperados del repositorio de datos.
   final List<Student> _allStudents = const [
     Student(
       id: '1',
@@ -167,16 +153,16 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
 
     switch (index) {
       case 0:
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        Navigator.of(context).pushNamed('/dashboard');
         break;
       case 1:
-        // Ya estamos en Estudiantes.
+        // Ya se encuentra en la pantalla de estudiantes.
         break;
       case 2:
-        Navigator.of(context).pushReplacementNamed('/alerts');
+        Navigator.of(context).pushNamed('/alerts');
         break;
       case 3:
-        Navigator.of(context).pushReplacementNamed('/reports');
+        Navigator.of(context).pushNamed('/reports');
         break;
     }
   }
@@ -189,18 +175,14 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Se añadirá en un futuro la consulta asíncrona a la base de datos local o remota.
     final filtered = _filteredStudents;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        elevation: 0,
+        title: const Text('ALERTA EDUCATIVA IA'),
         backgroundColor: const Color(0xFF1565C0),
         foregroundColor: Colors.white,
-        title: const Text(
-          'ALERTA EDUCATIVA IA',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
@@ -209,184 +191,174 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
           ),
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Cabecera superior "Mis estudiantes" y Buscador
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Mis estudiantes',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A237E),
+      body: RefreshIndicator(
+        onRefresh: () async {
+          // TODO: recargar datos desde el origen real (base de datos o API).
+          await Future.delayed(const Duration(milliseconds: 600));
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Mis estudiantes',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                ),
-                const SizedBox(height: 12),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Listado y monitoreo de riesgo académico',
+                    style: TextStyle(fontSize: 14, color: Colors.black54),
+                  ),
+                  const SizedBox(height: 16),
 
-                // Barra de Búsqueda
-                TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() => _searchQuery = value);
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Buscar estudiante...',
-                    hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: Color(0xFF1565C0)),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 20),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() => _searchQuery = '');
-                            },
-                          )
-                        : const Icon(Icons.tune_outlined, color: Colors.black45),
-                    filled: true,
-                    fillColor: const Color(0xFFF0F4F8),
-                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 14),
-
-                // Chips de Filtro por Nivel de Riesgo
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: RiskLevel.values.map((risk) {
-                      final isSelected = _selectedRiskFilter == risk;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: FilterChip(
-                          label: Text(risk.label),
-                          selected: isSelected,
-                          onSelected: (selected) {
-                            setState(() {
-                              _selectedRiskFilter = risk;
-                            });
-                          },
-                          selectedColor: const Color(0xFF1565C0),
-                          checkmarkColor: Colors.white,
-                          labelStyle: TextStyle(
-                            fontSize: 13,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                            color: isSelected ? Colors.white : Colors.black87,
-                          ),
-                          backgroundColor: const Color(0xFFE0E0E0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          side: BorderSide.none,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Encabezado de la lista de columnas (Nombre, Grado, Riesgo)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-            color: const Color(0xFFE8EAF6),
-            child: const Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Text(
-                    'Nombre',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Color(0xFF3F51B5),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Grado',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Color(0xFF3F51B5),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Text(
-                    'Riesgo',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                      color: Color(0xFF3F51B5),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 24), // Espacio alineado para la flecha
-              ],
-            ),
-          ),
-
-          // Lista de estudiantes
-          Expanded(
-            child: filtered.isEmpty
-                ? const Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.person_search_outlined,
-                            size: 60, color: Colors.black26),
-                        SizedBox(height: 12),
-                        Text(
-                          'No se encontraron estudiantes',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    itemCount: filtered.length,
-                    separatorBuilder: (context, index) => const Divider(
-                      height: 1,
-                      indent: 16,
-                      endIndent: 16,
-                      color: Colors.black12,
-                    ),
-                    itemBuilder: (context, index) {
-                      final student = filtered[index];
-                      return _StudentTile(
-                        student: student,
-                        onTap: () {
-                          Navigator.of(context).pushNamed(
-                            '/students/detail',
-                            arguments: student,
-                          );
-                        },
-                      );
+                  // Campo de búsqueda
+                  TextField(
+                    controller: _searchController,
+                    onChanged: (value) {
+                      setState(() => _searchQuery = value);
                     },
+                    decoration: InputDecoration(
+                      hintText: 'Buscar estudiante...',
+                      hintStyle: const TextStyle(fontSize: 14, color: Colors.black38),
+                      prefixIcon: const Icon(Icons.search, color: Color(0xFF1565C0)),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 20),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            )
+                          : const Icon(Icons.tune_outlined, color: Colors.black45),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.black12),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: const BorderSide(color: Colors.black12),
+                      ),
+                    ),
                   ),
-          ),
-        ],
+                  const SizedBox(height: 12),
+
+                  // Filtros por nivel de riesgo
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: RiskLevel.values.map((risk) {
+                        final isSelected = _selectedRiskFilter == risk;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ChoiceChip(
+                            label: Text(risk.label),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              if (selected) {
+                                setState(() => _selectedRiskFilter = risk);
+                              }
+                            },
+                            selectedColor: risk.color.withValues(alpha: 0.15),
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              color: isSelected ? risk.color : Colors.black87,
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Encabezado de la tabla de estudiantes
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              color: Colors.black.withValues(alpha: 0.04),
+              child: const Row(
+                children: [
+                  Expanded(
+                    flex: 4,
+                    child: Text(
+                      'Nombre',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2,
+                    child: Text(
+                      'Grado',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 3,
+                    child: Text(
+                      'Riesgo',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 24),
+                ],
+              ),
+            ),
+
+            // Lista filtrada
+            Expanded(
+              child: filtered.isEmpty
+                  ? const Center(
+                      child: Text(
+                        'No se encontraron estudiantes',
+                        style: TextStyle(color: Colors.black45, fontSize: 14),
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      itemCount: filtered.length,
+                      separatorBuilder: (context, index) => const Divider(
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                        color: Colors.black12,
+                      ),
+                      itemBuilder: (context, index) {
+                        final student = filtered[index];
+                        return _StudentTile(
+                          student: student,
+                          onTap: () {
+                            // TODO: Se añadirá en un futuro el paso de parámetros a la pantalla de detalle del estudiante.
+                            Navigator.of(context).pushNamed(
+                              '/students/detail',
+                              arguments: student,
+                            );
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentTabIndex,
@@ -417,7 +389,6 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
   }
 }
 
-/// Elemento individual de estudiante para la lista
 class _StudentTile extends StatelessWidget {
   final Student student;
   final VoidCallback onTap;
@@ -432,37 +403,32 @@ class _StudentTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         child: Row(
           children: [
-            // Avatar
             CircleAvatar(
-              radius: 20,
+              radius: 18,
               backgroundColor: const Color(0xFF1565C0).withValues(alpha: 0.1),
               child: Text(
                 student.name.isNotEmpty ? student.name[0] : 'E',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
+                  fontSize: 14,
                   color: Color(0xFF1565C0),
                 ),
               ),
             ),
             const SizedBox(width: 12),
-
-            // Nombre
             Expanded(
-              flex: 3,
+              flex: 4,
               child: Text(
                 student.name,
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
-                  color: Colors.black87,
                 ),
               ),
             ),
-
-            // Grado
             Expanded(
               flex: 2,
               child: Text(
@@ -474,29 +440,26 @@ class _StudentTile extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Etiqueta de Nivel de Riesgo
             Expanded(
-              flex: 2,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: student.risk.backgroundColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  student.risk.label.replaceAll('Riesgo ', ''),
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: student.risk.color,
+              flex: 3,
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: student.risk.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    student.risk.label.replaceAll('Riesgo ', ''),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: student.risk.color,
+                    ),
                   ),
                 ),
               ),
             ),
-
-            // Flecha de navegación
             const SizedBox(width: 8),
             const Icon(
               Icons.chevron_right,
