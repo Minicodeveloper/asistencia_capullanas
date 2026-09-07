@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
+import 'screens/students_list_screen.dart';
 
 void main() {
   runApp(const AlertaEducativaApp());
@@ -26,9 +27,9 @@ class AlertaEducativaApp extends StatelessWidget {
         AppRoutes.welcome: (context) => const WelcomeScreen(),
         AppRoutes.login: (context) => const LoginScreen(),
         AppRoutes.dashboard: (context) => const DashboardScreen(),
+        AppRoutes.studentsList: (context) => const StudentsListScreen(),
 
         // Se irán agregando a medida que creemos cada pantalla:
-        // AppRoutes.studentsList: (context) => const StudentsListScreen(),
         // AppRoutes.studentDetail: (context) => const StudentDetailScreen(),
         // AppRoutes.riskAnalysis: (context) => const RiskAnalysisScreen(),
         // AppRoutes.alerts: (context) => const AlertsScreen(),
