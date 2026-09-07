@@ -1,6 +1,6 @@
 {
-    "name": "asistencia_capullanas",
-    "short_name": "asistencia_capullanas",
+    "name": "alerta_educativa",
+    "short_name": "alerta_educativa",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
