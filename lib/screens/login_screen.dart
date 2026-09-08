@@ -183,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 8,
                               ),
                             ],
@@ -198,34 +198,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text(
-                          'Alerta Educativa ',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF81D4FA),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Text(
-                            'IA',
-                            style: TextStyle(
-                              fontSize: 19,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Alerta Educativa',
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                     const SizedBox(height: 6),
 
@@ -255,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -286,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 6,
                             offset: const Offset(0, 3),
                           ),
@@ -476,7 +455,7 @@ class _RoleCard extends StatelessWidget {
               : Border.all(color: Colors.transparent, width: 3.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(isSelected ? 0.12 : 0.05),
+              color: Colors.black.withValues(alpha: isSelected ? 0.12 : 0.05),
               blurRadius: isSelected ? 8 : 4,
               offset: const Offset(0, 3),
             ),
