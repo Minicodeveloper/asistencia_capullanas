@@ -115,9 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF80D8FF),
-              Color(0xFF4FC3F7),
+              Color(0xFF7CD5FF),
+              Color(0xFFE1F5FE),
+              Color(0xFF29B6F6),
             ],
+            stops: [0.0, 0.5, 1.0],
           ),
         ),
         child: SafeArea(
@@ -130,7 +132,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Logo de la institución
                     Image.asset(
                       'assets/images/capullanas_logo.png',
                       height: 110,
@@ -159,7 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Título Alerta Educativa IA
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       mainAxisSize: MainAxisSize.min,
@@ -167,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const Text(
                           'Alerta Educativa ',
                           style: TextStyle(
-                            fontSize: 22,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
                           ),
@@ -181,7 +181,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: const Text(
                             'IA',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 19,
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
@@ -194,7 +194,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text(
                       'Bienvenida',
                       style: TextStyle(
-                        fontSize: 28,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                       ),
@@ -204,14 +204,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     const Text(
                       'Inicia Sesion',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.w500,
                         color: Colors.black87,
                       ),
                     ),
                     const SizedBox(height: 20),
 
-                    // Campo de Usuario o correo
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -227,10 +226,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
-                        style: const TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 16),
                         decoration: const InputDecoration(
                           hintText: 'Usuario o correo',
-                          hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                          hintStyle: TextStyle(color: Colors.black38, fontSize: 16),
                           prefixIcon: Padding(
                             padding: EdgeInsets.only(left: 16, right: 10),
                             child: Icon(Icons.person, color: Colors.black87, size: 24),
@@ -243,7 +242,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 14),
 
-                    // Campo de Contraseña
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -259,10 +257,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
-                        style: const TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 16),
                         decoration: InputDecoration(
                           hintText: 'Contraseña',
-                          hintStyle: const TextStyle(color: Colors.black38, fontSize: 15),
+                          hintStyle: const TextStyle(color: Colors.black38, fontSize: 16),
                           prefixIcon: const Padding(
                             padding: EdgeInsets.only(left: 16, right: 10),
                             child: Icon(Icons.lock, color: Colors.black87, size: 24),
@@ -287,10 +285,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Botón Ingresar
                     SizedBox(
                       width: double.infinity,
-                      height: 50,
+                      height: 52,
                       child: ElevatedButton(
                         onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
@@ -313,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             : const Text(
                                 'Ingresar',
                                 style: TextStyle(
-                                  fontSize: 18,
+                                  fontSize: 19,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -321,7 +318,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 10),
 
-                    // Enlace Olvidaste tu contraseña
                     TextButton(
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -335,24 +331,22 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           color: Color(0xFF0038FF),
                           fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontSize: 16,
                         ),
                       ),
                     ),
                     const SizedBox(height: 12),
 
-                    // Título Selección de rol
                     const Text(
                       'Selecciona tu rol:',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF0D1B2A),
                       ),
                     ),
                     const SizedBox(height: 14),
 
-                    // Tarjetas de Selección de Rol (2x2 Grid)
                     Row(
                       children: [
                         Expanded(
@@ -458,7 +452,7 @@ class _RoleCard extends StatelessWidget {
               role.label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? const Color(0xFF0038FF) : const Color(0xFF1B365D),
                 height: 1.1,
