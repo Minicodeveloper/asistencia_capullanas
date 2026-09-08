@@ -67,10 +67,23 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  /// Si es un nombre de usuario simple, se verifica una longitud mínima.
   String? _validateEmail(String? value) {
     if (value == null || value.trim().isEmpty) {
       return 'Ingresa tu usuario o correo';
     }
+
+    final trimmed = value.trim();
+
+    if (trimmed.contains('@')) {
+      final emailRegExp = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+      if (!emailRegExp.hasMatch(trimmed)) {
+        return 'Ingresa un correo electrónico válido';
+      }
+    } else if (trimmed.length < 3) {
+      return 'El usuario debe tener al menos 3 caracteres';
+    }
+
     return null;
   }
 
@@ -78,31 +91,56 @@ class _LoginScreenState extends State<LoginScreen> {
     if (value == null || value.isEmpty) {
       return 'Ingresa tu contraseña';
     }
+    if (value.length < 4) {
+      return 'La contraseña debe tener al menos 4 caracteres';
+    }
     return null;
   }
 
+  /// Procesa el inicio de sesión simulando una autenticación.
   Future<void> _handleLogin() async {
     if (_isLoading) return;
 
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
 
+    if (!mounted) return;
     setState(() => _isLoading = true);
 
     try {
-      await Future.delayed(const Duration(milliseconds: 500));
+      final input = _emailController.text.trim();
+      final password = _passwordController.text;
+
+      // Conectar con el servicio API/Auth real aquí (ej. HTTP/Dio).
+      // Se enviarán las credenciales (input, password) y el rol seleccionado (_selectedRole).
+      await Future.delayed(const Duration(milliseconds: 800));
+
+      // Verificación mock de datos
+      if (input.isEmpty || password.isEmpty) {
+        throw Exception('Datos de autenticación incompletos');
+      }
 
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
+
+      // Pasar el rol seleccionado (_selectedRole) al estado global o como argumento de ruta
+      Navigator.of(context).pushReplacementNamed(
+        AppRoutes.dashboard,
+        arguments: {
+          'user': input,
+          'role': _selectedRole,
+        },
+      );
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No se pudo iniciar sesión. Intenta nuevamente.'),
+          content: Text('Error de autenticación. Verifica tus datos e intenta nuevamente.'),
         ),
       );
     } finally {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -273,6 +311,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black54,
                             ),
                             onPressed: () {
+                              if (!mounted) return;
                               setState(() => _obscurePassword = !_obscurePassword);
                             },
                           ),
@@ -320,6 +359,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     TextButton(
                       onPressed: () {
+                        if (!mounted) return;
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text('Contacta al administrador del sistema.'),
@@ -353,7 +393,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _RoleCard(
                             role: UserRole.docente,
                             isSelected: _selectedRole == UserRole.docente,
-                            onTap: () => setState(() => _selectedRole = UserRole.docente),
+                            onTap: () {
+                              if (!mounted) return;
+                              setState(() => _selectedRole = UserRole.docente);
+                            },
                           ),
                         ),
                         const SizedBox(width: 14),
@@ -361,7 +404,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _RoleCard(
                             role: UserRole.tutor,
                             isSelected: _selectedRole == UserRole.tutor,
-                            onTap: () => setState(() => _selectedRole = UserRole.tutor),
+                            onTap: () {
+                              if (!mounted) return;
+                              setState(() => _selectedRole = UserRole.tutor);
+                            },
                           ),
                         ),
                       ],
@@ -374,7 +420,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _RoleCard(
                             role: UserRole.directivo,
                             isSelected: _selectedRole == UserRole.directivo,
-                            onTap: () => setState(() => _selectedRole = UserRole.directivo),
+                            onTap: () {
+                              if (!mounted) return;
+                              setState(() => _selectedRole = UserRole.directivo);
+                            },
                           ),
                         ),
                         const SizedBox(width: 14),
@@ -382,7 +431,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: _RoleCard(
                             role: UserRole.padreDeFamilia,
                             isSelected: _selectedRole == UserRole.padreDeFamilia,
-                            onTap: () => setState(() => _selectedRole = UserRole.padreDeFamilia),
+                            onTap: () {
+                              if (!mounted) return;
+                              setState(() => _selectedRole = UserRole.padreDeFamilia);
+                            },
                           ),
                         ),
                       ],
