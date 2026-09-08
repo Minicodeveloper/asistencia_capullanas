@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'routes.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
@@ -45,21 +46,4 @@ class AlertaEducativaApp extends StatelessWidget {
       },
     );
   }
-}
-
-/// Nombres de ruta centralizados. Usar siempre estas constantes
-/// en lugar de strings sueltos al navegar (Navigator.pushNamed(context, AppRoutes.login)).
-class AppRoutes {
-  AppRoutes._();
-
-  static const String welcome = '/';
-  static const String login = '/login';
-  static const String dashboard = '/dashboard';
-  static const String studentsList = '/students';
-  static const String studentDetail = '/students/detail';
-  static const String riskAnalysis = '/risk-analysis';
-  static const String alerts = '/alerts';
-  static const String reports = '/reports';
-  static const String communication = '/communication';
-  static const String closing = '/closing';
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../main.dart' show AppRoutes;
+import '../routes.dart';
 
 /// Roles disponibles en el sistema.
 enum UserRole { docente, administrador, tutor }
