@@ -389,6 +389,10 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
   }
 }
 
+extension on Color {
+  withValues({required double alpha}) {}
+}
+
 class _StudentTile extends StatelessWidget {
   final Student student;
   final VoidCallback onTap;

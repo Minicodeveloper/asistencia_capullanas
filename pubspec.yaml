@@ -24,8 +24,10 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/images/
     - assets/images/logo_colegio.png
-    - assets/images/welcome_flores_laterales.png
     - assets/images/welcome_degradado_fondo.png
     - assets/images/welcome_persona.png
+    - assets/images/welcome_flores_laterales_izquierda.png
+    - assets/images/welcome_flores_laterales_derecha.png
+    - assets/images/welcome_flores_laterales_abajo_ezquierda.png
+    - assets/images/welcome_flores_laterales_abajo_derecha.png
