@@ -9,10 +9,14 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportsScreenState extends State<ReportsScreen> {
-  int _currentTabIndex = 3; // 3 = Reportes
+  int _currentTabIndex = 3;
   String _selectedFilter = 'General';
+  String _selectedSubGrade = '5°';
+  String _selectedSubSection = 'Sección B';
 
   final List<String> _filters = const ['General', 'Por Grado', 'Por Sección'];
+  final List<String> _grades = const ['1°', '2°', '3°', '4°', '5°'];
+  final List<String> _sections = const ['Sección A', 'Sección B', 'Sección C'];
 
   void _onTabTapped(int index) {
     if (index == _currentTabIndex) return;
@@ -34,10 +38,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   void _downloadReport() {
+    // TODO: conectar con servicio de exportación PDF/Excel desde la base de datos real.
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Generando y descargando el reporte institucional...'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text('Generando y descargando reporte de $_selectedFilter...'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -49,7 +54,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Barra superior de encabezado
+            // Encabezado principal
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               color: const Color(0xFF80D8FF),
@@ -130,12 +135,65 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         );
                       }).toList(),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
 
-                    // Título Resumen Institucional
-                    const Text(
-                      'Resumen Institucional',
-                      style: TextStyle(
+                    // Sub-filtro secundario según selección
+                    if (_selectedFilter == 'Por Grado')
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _grades.map((grade) {
+                            final isSel = _selectedSubGrade == grade;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ChoiceChip(
+                                label: Text('Grado $grade'),
+                                selected: isSel,
+                                selectedColor: const Color(0xFF0038FF),
+                                labelStyle: TextStyle(
+                                  color: isSel ? Colors.white : const Color(0xFF1B365D),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                onSelected: (sel) {
+                                  if (sel) setState(() => _selectedSubGrade = grade);
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                    if (_selectedFilter == 'Por Sección')
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: _sections.map((sec) {
+                            final isSel = _selectedSubSection == sec;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: ChoiceChip(
+                                label: Text(sec),
+                                selected: isSel,
+                                selectedColor: const Color(0xFF0038FF),
+                                labelStyle: TextStyle(
+                                  color: isSel ? Colors.white : const Color(0xFF1B365D),
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                onSelected: (sel) {
+                                  if (sel) setState(() => _selectedSubSection = sec);
+                                },
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+
+                    const SizedBox(height: 12),
+
+                    // Título dinámico
+                    Text(
+                      _getSectionTitle(_selectedFilter),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1B365D),
@@ -143,61 +201,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Cuadrícula 2x2 de métricas
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: _SummaryMetricCard(
-                            value: '92%',
-                            label: 'Asistencia\ngeneral',
-                            backgroundColor: Color(0xFFE0F7FA),
-                            iconColor: Color(0xFF0038FF),
-                            icon: Icons.person_search_rounded,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: _SummaryMetricCard(
-                            value: '12',
-                            label: 'Estudiante\nen riesgo',
-                            backgroundColor: Color(0xFFFFEBEE),
-                            iconColor: Color(0xFFE53935),
-                            icon: Icons.warning_amber_rounded,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: _SummaryMetricCard(
-                            value: '+ 8%',
-                            label: 'Mejora vs.\nmes anterior',
-                            backgroundColor: Color(0xFFE8F5E9),
-                            iconColor: Color(0xFF2E7D32),
-                            icon: Icons.trending_up_rounded,
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: _SummaryMetricCard(
-                            value: '136',
-                            label: 'Total de\nestudiantes',
-                            backgroundColor: Color(0xFFF3E5F5),
-                            iconColor: Color(0xFF7B1FA2),
-                            icon: Icons.groups_rounded,
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Cuadrícula de métricas
+                    _buildMetricsGrid(_selectedFilter),
                     const SizedBox(height: 24),
 
-                    // Título Nivel de riesgo por grado
-                    const Text(
-                      'Nivel de riesgo por grado',
-                      style: TextStyle(
+                    // Título del gráfico
+                    Text(
+                      _getChartTitle(_selectedFilter),
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF1B365D),
@@ -206,7 +217,11 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     const SizedBox(height: 16),
 
                     // Gráfico de barras apiladas
-                    const _RiskBarChartWidget(),
+                    _RiskBarChartWidget(
+                      filter: _selectedFilter,
+                      subGrade: _selectedSubGrade,
+                      subSection: _selectedSubSection,
+                    ),
                     const SizedBox(height: 16),
 
                     // Leyenda de colores del gráfico
@@ -300,6 +315,100 @@ class _ReportsScreenState extends State<ReportsScreen> {
       ),
     );
   }
+
+  String _getSectionTitle(String filter) {
+    switch (filter) {
+      case 'Por Grado':
+        return 'Resumen - $_selectedSubGrade Grado';
+      case 'Por Sección':
+        return 'Resumen - $_selectedSubSection';
+      default:
+        return 'Resumen Institucional';
+    }
+  }
+
+  String _getChartTitle(String filter) {
+    switch (filter) {
+      case 'Por Grado':
+        return 'Nivel de riesgo en $_selectedSubGrade Grado';
+      case 'Por Sección':
+        return 'Nivel de riesgo en $_selectedSubSection';
+      default:
+        return 'Nivel de riesgo institucional por grado';
+    }
+  }
+
+  Widget _buildMetricsGrid(String filter) {
+    // TODO: conectar con repositorio/base de datos para calcular métricas reales según filtro.
+    String attendance = '92%';
+    String riskCount = '12';
+    String improvement = '+ 8%';
+    String totalStudents = '136';
+
+    if (filter == 'Por Grado') {
+      attendance = '91%';
+      riskCount = '4';
+      improvement = '+ 5%';
+      totalStudents = '28';
+    } else if (filter == 'Por Sección') {
+      attendance = '94%';
+      riskCount = '3';
+      improvement = '+ 10%';
+      totalStudents = '25';
+    }
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _SummaryMetricCard(
+                value: attendance,
+                label: 'Asistencia\npromedios',
+                backgroundColor: const Color(0xFFE0F7FA),
+                iconColor: const Color(0xFF0038FF),
+                icon: Icons.person_search_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _SummaryMetricCard(
+                value: riskCount,
+                label: 'Estudiantes\nen riesgo',
+                backgroundColor: const Color(0xFFFFEBEE),
+                iconColor: const Color(0xFFE53935),
+                icon: Icons.warning_amber_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _SummaryMetricCard(
+                value: improvement,
+                label: 'Mejora vs.\nmes anterior',
+                backgroundColor: const Color(0xFFE8F5E9),
+                iconColor: const Color(0xFF2E7D32),
+                icon: Icons.trending_up_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _SummaryMetricCard(
+                value: totalStudents,
+                label: 'Total de\nestudiantes',
+                backgroundColor: const Color(0xFFF3E5F5),
+                iconColor: const Color(0xFF7B1FA2),
+                icon: Icons.groups_rounded,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 }
 
 class _SummaryMetricCard extends StatelessWidget {
@@ -344,7 +453,7 @@ class _SummaryMetricCard extends StatelessWidget {
                 Text(
                   value,
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1B365D),
                   ),
@@ -367,17 +476,42 @@ class _SummaryMetricCard extends StatelessWidget {
 }
 
 class _RiskBarChartWidget extends StatelessWidget {
-  const _RiskBarChartWidget();
+  final String filter;
+  final String subGrade;
+  final String subSection;
+
+  const _RiskBarChartWidget({
+    required this.filter,
+    required this.subGrade,
+    required this.subSection,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final gradeData = [
-      {'grade': '1°', 'alto': 0.3, 'medio': 1.5, 'bajo': 2.2},
-      {'grade': '2°', 'alto': 0.2, 'medio': 1.2, 'bajo': 1.6},
-      {'grade': '3°', 'alto': 1.5, 'medio': 1.8, 'bajo': 3.2},
-      {'grade': '4°', 'alto': 0.8, 'medio': 1.5, 'bajo': 2.2},
-      {'grade': '5°', 'alto': 2.0, 'medio': 1.5, 'bajo': 4.5},
-    ];
+    // TODO: consultar datos reales de distribución de riesgo desde la base de datos.
+    List<Map<String, dynamic>> chartData;
+
+    if (filter == 'Por Sección') {
+      chartData = [
+        {'label': 'Sec A', 'alto': 1.2, 'medio': 2.0, 'bajo': 3.5},
+        {'label': 'Sec B', 'alto': 2.5, 'medio': 2.2, 'bajo': 2.8},
+        {'label': 'Sec C', 'alto': 1.0, 'medio': 1.8, 'bajo': 4.0},
+      ];
+    } else if (filter == 'Por Grado') {
+      chartData = [
+        {'label': '$subGrade A', 'alto': 1.0, 'medio': 1.5, 'bajo': 3.0},
+        {'label': '$subGrade B', 'alto': 2.0, 'medio': 1.2, 'bajo': 2.5},
+        {'label': '$subGrade C', 'alto': 0.5, 'medio': 1.0, 'bajo': 3.8},
+      ];
+    } else {
+      chartData = [
+        {'label': '1°', 'alto': 0.3, 'medio': 1.5, 'bajo': 2.2},
+        {'label': '2°', 'alto': 0.2, 'medio': 1.2, 'bajo': 1.6},
+        {'label': '3°', 'alto': 1.5, 'medio': 1.8, 'bajo': 3.2},
+        {'label': '4°', 'alto': 0.8, 'medio': 1.5, 'bajo': 2.2},
+        {'label': '5°', 'alto': 2.0, 'medio': 1.5, 'bajo': 4.5},
+      ];
+    }
 
     return Container(
       height: 180,
@@ -385,7 +519,6 @@ class _RiskBarChartWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Eje Y
           const Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -398,11 +531,9 @@ class _RiskBarChartWidget extends StatelessWidget {
           ),
           const SizedBox(width: 8),
 
-          // Área del gráfico con barras
           Expanded(
             child: Stack(
               children: [
-                // Líneas horizontales de guía
                 Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
@@ -411,11 +542,10 @@ class _RiskBarChartWidget extends StatelessWidget {
                   ),
                 ),
 
-                // Barras apiladas
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  children: gradeData.map((data) {
+                  children: chartData.map((data) {
                     final alto = data['alto'] as double;
                     final medio = data['medio'] as double;
                     final bajo = data['bajo'] as double;
@@ -425,7 +555,7 @@ class _RiskBarChartWidget extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         SizedBox(
-                          width: 38,
+                          width: filter == 'General' ? 38 : 52,
                           height: (total / 8.0) * 130,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(4),
@@ -449,7 +579,7 @@ class _RiskBarChartWidget extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          data['grade'] as String,
+                          data['label'] as String,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

@@ -142,16 +142,15 @@ class _AlertsScreenState extends State<AlertsScreen> {
 
     switch (index) {
       case 0:
-        Navigator.of(context).pushNamed(AppRoutes.dashboard);
+        Navigator.of(context).pushReplacementNamed(AppRoutes.dashboard);
         break;
       case 1:
-        Navigator.of(context).pushNamed(AppRoutes.studentsList);
+        Navigator.of(context).pushReplacementNamed(AppRoutes.studentsList);
         break;
       case 2:
-      // Ya se encuentra en la pantalla de alertas.
         break;
       case 3:
-        Navigator.of(context).pushNamed(AppRoutes.reports);
+        Navigator.of(context).pushReplacementNamed(AppRoutes.reports);
         break;
     }
   }
@@ -244,28 +243,73 @@ class _AlertsScreenState extends State<AlertsScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1565C0),
-        unselectedItemColor: Colors.black45,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.groups_outlined),
-            label: 'Estudiantes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
-            label: 'Alertas',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            label: 'Reportes',
+      bottomNavigationBar: Container(
+        color: const Color(0xFFD0F0FF),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(
+              icon: Icons.home,
+              label: 'Inicio',
+              isSelected: _currentTabIndex == 0,
+              onTap: () => _onTabTapped(0),
+            ),
+            _NavItem(
+              icon: Icons.groups,
+              label: 'Estudiantes',
+              isSelected: _currentTabIndex == 1,
+              onTap: () => _onTabTapped(1),
+            ),
+            _NavItem(
+              icon: Icons.notifications,
+              label: 'Alertas',
+              isSelected: _currentTabIndex == 2,
+              onTap: () => _onTabTapped(2),
+            ),
+            _NavItem(
+              icon: Icons.bar_chart,
+              label: 'Reportes',
+              isSelected: _currentTabIndex == 3,
+              onTap: () => _onTabTapped(3),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? const Color(0xFF0038FF) : Colors.black45;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: color,
+            ),
           ),
         ],
       ),

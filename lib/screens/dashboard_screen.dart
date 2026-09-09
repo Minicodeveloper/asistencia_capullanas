@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Modelo simple para una tarjeta de estadística del dashboard.
 class _StatCardData {
   final String value;
   final String label;
@@ -15,7 +14,6 @@ class _StatCardData {
   });
 }
 
-/// Modelo simple para un item de alerta reciente.
 class _AlertItem {
   final String studentName;
   final String grade;
@@ -56,13 +54,6 @@ extension RiskLevelStyle on RiskLevel {
   }
 }
 
-/// Panel principal: resumen de estudiantes monitoreados, niveles de riesgo,
-/// tendencia de asistencia y alertas recientes.
-///
-/// Recibe opcionalmente el rol de quien inició sesión (vía argumento de
-/// la ruta, ej. Navigator.pushNamed(context, AppRoutes.dashboard,
-/// arguments: 'Docente')) para personalizar el saludo. Si no llega
-/// ningún argumento, muestra un saludo genérico.
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -73,10 +64,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int _currentTabIndex = 0;
 
-  // TODO: reemplazar por datos reales desde el repositorio/servicio
-  // correspondiente (API, base de datos local, etc.). Los valores en 0
-  // son intencionales: no se deben mostrar cifras de ejemplo como si
-  // fueran datos reales.
+  // TODO: reemplazar por datos reales desde la base de datos/API.
   final List<_AlertItem> _recentAlerts = const [
     _AlertItem(
       studentName: 'María Ruiz',
@@ -92,35 +80,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ),
   ];
 
-  // Serie de ejemplo para el gráfico de tendencia (0.0 a 1.0).
-  // TODO: reemplazar por el % de asistencia real de los últimos 30 días.
   final List<double> _attendanceTrend = const [
     0.55, 0.62, 0.58, 0.70, 0.68, 0.75, 0.72,
     0.80, 0.78, 0.85, 0.82, 0.90, 0.88, 0.92,
   ];
 
-  static const int _totalStudents = 0;
-  static const int _lowRiskCount = 0;
-  static const int _mediumRiskCount = 0;
-  static const int _highRiskCount = 0;
+  static const int _totalStudents = 136;
+  static const int _lowRiskCount = 98;
+  static const int _mediumRiskCount = 26;
+  static const int _highRiskCount = 12;
 
   void _onTabTapped(int index) {
     if (index == _currentTabIndex) return;
     setState(() => _currentTabIndex = index);
 
-    // Las demás pantallas del flujo se registrarán en main.dart
-    // a medida que se vayan construyendo.
     switch (index) {
       case 0:
         break;
       case 1:
-        Navigator.of(context).pushNamed('/students');
+        Navigator.of(context).pushReplacementNamed('/students');
         break;
       case 2:
-        Navigator.of(context).pushNamed('/alerts');
+        Navigator.of(context).pushReplacementNamed('/alerts');
         break;
       case 3:
-        Navigator.of(context).pushNamed('/reports');
+        Navigator.of(context).pushReplacementNamed('/reports');
         break;
     }
   }
@@ -128,32 +112,57 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)?.settings.arguments;
-    final String? roleLabel = args is Map ? args['role']?.toString() : args?.toString();
-    final greeting = (roleLabel != null && roleLabel.isNotEmpty) ? '¡Hola, $roleLabel!' : '¡Hola!';
+    String greetingName = '';
+
+    if (args is Map) {
+      if (args['user'] != null && args['user'].toString().trim().isNotEmpty) {
+        greetingName = args['user'].toString().trim();
+      } else if (args['role'] != null) {
+        final roleStr = args['role'].toString();
+        if (roleStr.contains('docente')) {
+          greetingName = 'profesora!';
+        } else if (roleStr.contains('tutor')) {
+          greetingName = 'Tutor!';
+        } else if (roleStr.contains('directivo')) {
+          greetingName = 'Directivo!';
+        } else if (roleStr.contains('padre')) {
+          greetingName = 'Padre de Familia!';
+        }
+      }
+    } else if (args != null) {
+      final str = args.toString();
+      if (str.contains('docente')) {
+        greetingName = 'profesora!';
+      }
+    }
+
+    final greeting = greetingName.isNotEmpty
+        ? (greetingName.startsWith('¡') ? greetingName : '¡Hola, $greetingName!')
+        : '¡Hola profesora!';
 
     final stats = <_StatCardData>[
-      _StatCardData(
+      const _StatCardData(
         value: '$_totalStudents',
         label: 'Estudiantes\nmonitoreados',
-        color: const Color(0xFF1565C0),
+        color: Color(0xFF1565C0),
         icon: Icons.groups_outlined,
       ),
-      _StatCardData(
+      const _StatCardData(
         value: '$_lowRiskCount',
         label: 'Riesgo bajo',
-        color: const Color(0xFF2E7D32),
+        color: Color(0xFF2E7D32),
         icon: Icons.check_circle_outline,
       ),
-      _StatCardData(
+      const _StatCardData(
         value: '$_mediumRiskCount',
         label: 'Riesgo medio',
-        color: const Color(0xFFF9A825),
+        color: Color(0xFFF9A825),
         icon: Icons.warning_amber_outlined,
       ),
-      _StatCardData(
+      const _StatCardData(
         value: '$_highRiskCount',
         label: 'Riesgo alto',
-        color: const Color(0xFFC62828),
+        color: Color(0xFFC62828),
         icon: Icons.error_outline,
       ),
     ];
@@ -167,12 +176,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
         titleSpacing: 12,
         title: Row(
           children: [
-            // Logo pequeño del colegio en el AppBar.
             SizedBox(
               width: 32,
               height: 32,
               child: Image.asset(
-                'assets/images/logo_colegio.png',
+                'assets/images/capullanas_logo.png',
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) => const Icon(
                   Icons.shield_outlined,
@@ -221,7 +229,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 4),
             const Text(
-              'Hoy cuidamos el futuro de nuestros estudiantes',
+              'Hoy cuidamos el futuro de nuestras estudiantes',
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
             const SizedBox(height: 20),
@@ -257,15 +265,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               child: _attendanceTrend.isEmpty
                   ? const Center(
-                child: Text(
-                  'Sin datos de asistencia aún',
-                  style: TextStyle(color: Colors.black38, fontSize: 12),
-                ),
-              )
+                      child: Text(
+                        'Sin datos de asistencia aún',
+                        style: TextStyle(color: Colors.black38, fontSize: 12),
+                      ),
+                    )
                   : CustomPaint(
-                size: Size.infinite,
-                painter: _TrendLinePainter(values: _attendanceTrend),
-              ),
+                      size: Size.infinite,
+                      painter: _TrendLinePainter(values: _attendanceTrend),
+                    ),
             ),
             const SizedBox(height: 24),
 
@@ -299,37 +307,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1565C0),
-        unselectedItemColor: Colors.black45,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.groups_outlined),
-            label: 'Estudiantes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
-            label: 'Alertas',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            label: 'Reportes',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        color: const Color(0xFFD0F0FF),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(
+              icon: Icons.home,
+              label: 'Inicio',
+              isSelected: _currentTabIndex == 0,
+              onTap: () => _onTabTapped(0),
+            ),
+            _NavItem(
+              icon: Icons.groups,
+              label: 'Estudiantes',
+              isSelected: _currentTabIndex == 1,
+              onTap: () => _onTabTapped(1),
+            ),
+            _NavItem(
+              icon: Icons.notifications,
+              label: 'Alertas',
+              isSelected: _currentTabIndex == 2,
+              onTap: () => _onTabTapped(2),
+            ),
+            _NavItem(
+              icon: Icons.bar_chart,
+              label: 'Reportes',
+              isSelected: _currentTabIndex == 3,
+              onTap: () => _onTabTapped(3),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Dibuja una línea de tendencia simple (tipo sparkline) con puntos,
-/// sin depender de ninguna librería externa de gráficos.
 class _TrendLinePainter extends CustomPainter {
   final List<double> values;
 
@@ -349,7 +363,6 @@ class _TrendLinePainter extends CustomPainter {
 
     final minValue = values.reduce((a, b) => a < b ? a : b);
     final maxValue = values.reduce((a, b) => a > b ? a : b);
-    // Evita división por cero si todos los valores son iguales.
     final range = (maxValue - minValue).abs() < 0.0001
         ? 1.0
         : maxValue - minValue;
@@ -360,7 +373,6 @@ class _TrendLinePainter extends CustomPainter {
     for (var i = 0; i < values.length; i++) {
       final normalized = (values[i] - minValue) / range;
       final x = i * stepX;
-      // Se invierte Y porque en canvas 0 es arriba.
       final y = size.height - (normalized * size.height);
       points.add(Offset(x, y));
     }
@@ -392,7 +404,7 @@ class _StatCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: data.color.withOpacity(0.08),
+        color: data.color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -431,7 +443,7 @@ class _AlertTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: alert.risk.color.withOpacity(0.08),
+        color: alert.risk.color.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(10),
         border: Border(left: BorderSide(color: alert.risk.color, width: 4)),
       ),
@@ -460,6 +472,43 @@ class _AlertTile extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? const Color(0xFF0038FF) : Colors.black45;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: color,
             ),
           ),
         ],

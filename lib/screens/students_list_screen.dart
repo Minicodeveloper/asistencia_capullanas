@@ -80,6 +80,8 @@ class StudentsListScreen extends StatefulWidget {
 class _StudentsListScreenState extends State<StudentsListScreen> {
   int _currentTabIndex = 1;
   RiskLevel _selectedRiskFilter = RiskLevel.todos;
+  String _selectedGradeFilter = 'Todos';
+  String _selectedSectionFilter = 'Todas';
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
@@ -141,11 +143,128 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
               .contains(_searchQuery.toLowerCase()) ||
           student.grade.toLowerCase().contains(_searchQuery.toLowerCase());
 
-      final matchesFilter = _selectedRiskFilter == RiskLevel.todos ||
+      final matchesRisk = _selectedRiskFilter == RiskLevel.todos ||
           student.risk == _selectedRiskFilter;
 
-      return matchesSearch && matchesFilter;
+      final matchesGrade = _selectedGradeFilter == 'Todos' ||
+          student.grade.startsWith(_selectedGradeFilter);
+
+      final matchesSection = _selectedSectionFilter == 'Todas' ||
+          student.grade.endsWith(_selectedSectionFilter);
+
+      return matchesSearch && matchesRisk && matchesGrade && matchesSection;
     }).toList();
+  }
+
+  void _openFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Filtros por Grado y Sección',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF1B365D),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Grado:',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: ['Todos', '1°', '2°', '3°', '4°', '5°'].map((g) {
+                      final isSel = _selectedGradeFilter == g;
+                      return ChoiceChip(
+                        label: Text(g),
+                        selected: isSel,
+                        selectedColor: const Color(0xFF0038FF),
+                        labelStyle: TextStyle(
+                          color: isSel ? Colors.white : Colors.black87,
+                          fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                        ),
+                        onSelected: (selected) {
+                          if (selected) {
+                            setModalState(() {});
+                            setState(() => _selectedGradeFilter = g);
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Sección:',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 8,
+                    children: ['Todas', 'A', 'B', 'C'].map((s) {
+                      final isSel = _selectedSectionFilter == s;
+                      return ChoiceChip(
+                        label: Text(s),
+                        selected: isSel,
+                        selectedColor: const Color(0xFF0038FF),
+                        labelStyle: TextStyle(
+                          color: isSel ? Colors.white : Colors.black87,
+                          fontWeight: isSel ? FontWeight.bold : FontWeight.normal,
+                        ),
+                        onSelected: (selected) {
+                          if (selected) {
+                            setModalState(() {});
+                            setState(() => _selectedSectionFilter = s);
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 44,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF0038FF),
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Aplicar Filtros', style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _onTabTapped(int index) {
@@ -226,7 +345,6 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
               ),
             ),
 
-            // Título "Mis estudiantes" y Buscador
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
               child: Column(
@@ -269,14 +387,25 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      Container(
-                        height: 42,
-                        width: 44,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFE0E0E0),
-                          borderRadius: BorderRadius.circular(10),
+                      GestureDetector(
+                        onTap: _openFilterBottomSheet,
+                        child: Container(
+                          height: 42,
+                          width: 44,
+                          decoration: BoxDecoration(
+                            color: (_selectedGradeFilter != 'Todos' || _selectedSectionFilter != 'Todas')
+                                ? const Color(0xFF0038FF)
+                                : const Color(0xFFE0E0E0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.tune,
+                            color: (_selectedGradeFilter != 'Todos' || _selectedSectionFilter != 'Todas')
+                                ? Colors.white
+                                : Colors.black,
+                            size: 24,
+                          ),
                         ),
-                        child: const Icon(Icons.tune, color: Colors.black, size: 24),
                       ),
                     ],
                   ),
@@ -320,7 +449,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
               ),
             ),
 
-            // Encabezado de la tabla (Nombre, Grado, Riesgo)
+            // Encabezado de la tabla
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
