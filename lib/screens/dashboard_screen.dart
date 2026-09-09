@@ -58,6 +58,11 @@ extension RiskLevelStyle on RiskLevel {
 
 /// Panel principal: resumen de estudiantes monitoreados, niveles de riesgo,
 /// tendencia de asistencia y alertas recientes.
+///
+/// Recibe opcionalmente el rol de quien inició sesión (vía argumento de
+/// la ruta, ej. Navigator.pushNamed(context, AppRoutes.dashboard,
+/// arguments: 'Docente')) para personalizar el saludo. Si no llega
+/// ningún argumento, muestra un saludo genérico.
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -69,10 +74,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _currentTabIndex = 0;
 
   // TODO: reemplazar por datos reales desde el repositorio/servicio
-  // correspondiente (API, base de datos local, etc.).
+  // correspondiente (API, base de datos local, etc.). Los valores en 0
+  // son intencionales: no se deben mostrar cifras de ejemplo como si
+  // fueran datos reales.
   final List<_AlertItem> _recentAlerts = const [
     _AlertItem(
-      studentName: 'María López',
+      studentName: 'María Ruiz',
       grade: '5° B',
       description: 'Inasistencias frecuentes',
       risk: RiskLevel.alto,
@@ -83,6 +90,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       description: 'Bajo rendimiento académico',
       risk: RiskLevel.medio,
     ),
+  ];
+
+  // Serie de ejemplo para el gráfico de tendencia (0.0 a 1.0).
+  // TODO: reemplazar por el % de asistencia real de los últimos 30 días.
+  final List<double> _attendanceTrend = const [
+    0.55, 0.62, 0.58, 0.70, 0.68, 0.75, 0.72,
+    0.80, 0.78, 0.85, 0.82, 0.90, 0.88, 0.92,
   ];
 
   static const int _totalStudents = 0;
@@ -98,7 +112,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // a medida que se vayan construyendo.
     switch (index) {
       case 0:
-      // Ya estamos en el dashboard.
         break;
       case 1:
         Navigator.of(context).pushNamed('/students');
@@ -114,6 +127,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Rol recibido desde login_screen.dart (puede ser null si se navegó
+    // directo a esta pantalla sin pasar por el login).
+    final roleLabel = ModalRoute.of(context)?.settings.arguments as String?;
+    final greeting = roleLabel != null ? '¡Hola, $roleLabel!' : '¡Hola!';
+
     final stats = <_StatCardData>[
       _StatCardData(
         value: '$_totalStudents',
@@ -142,10 +160,43 @@ class _DashboardScreenState extends State<DashboardScreen> {
     ];
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: const Text('Panel de control'),
-        backgroundColor: const Color(0xFF1565C0),
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black87,
+        elevation: 0.5,
+        titleSpacing: 12,
+        title: Row(
+          children: [
+            // Logo pequeño del colegio en el AppBar.
+            SizedBox(
+              width: 32,
+              height: 32,
+              child: Image.asset(
+                'assets/images/logo_colegio.png',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) => const Icon(
+                  Icons.shield_outlined,
+                  color: Color(0xFF1565C0),
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Alerta Educativa',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'Panel de control',
+                  style: TextStyle(fontSize: 11, color: Colors.black54),
+                ),
+              ],
+            ),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_none),
@@ -162,9 +213,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            const Text(
-              '¡Hola!',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            Text(
+              greeting,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 4),
             const Text(
@@ -196,18 +250,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
             Container(
               height: 140,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.black12),
               ),
-              child: const Center(
+              child: _attendanceTrend.isEmpty
+                  ? const Center(
                 child: Text(
-                  'Gráfico de asistencia\n(pendiente de conectar a datos reales)',
-                  textAlign: TextAlign.center,
+                  'Sin datos de asistencia aún',
                   style: TextStyle(color: Colors.black38, fontSize: 12),
                 ),
+              )
+                  : CustomPaint(
+                size: Size.infinite,
+                painter: _TrendLinePainter(values: _attendanceTrend),
               ),
             ),
             const SizedBox(height: 24),
@@ -268,6 +326,60 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
     );
+  }
+}
+
+/// Dibuja una línea de tendencia simple (tipo sparkline) con puntos,
+/// sin depender de ninguna librería externa de gráficos.
+class _TrendLinePainter extends CustomPainter {
+  final List<double> values;
+
+  _TrendLinePainter({required this.values});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (values.length < 2) return;
+
+    final linePaint = Paint()
+      ..color = const Color(0xFF1565C0)
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+
+    final dotPaint = Paint()..color = const Color(0xFF1565C0);
+
+    final minValue = values.reduce((a, b) => a < b ? a : b);
+    final maxValue = values.reduce((a, b) => a > b ? a : b);
+    // Evita división por cero si todos los valores son iguales.
+    final range = (maxValue - minValue).abs() < 0.0001
+        ? 1.0
+        : maxValue - minValue;
+
+    final stepX = size.width / (values.length - 1);
+    final points = <Offset>[];
+
+    for (var i = 0; i < values.length; i++) {
+      final normalized = (values[i] - minValue) / range;
+      final x = i * stepX;
+      // Se invierte Y porque en canvas 0 es arriba.
+      final y = size.height - (normalized * size.height);
+      points.add(Offset(x, y));
+    }
+
+    final path = Path()..moveTo(points.first.dx, points.first.dy);
+    for (final point in points.skip(1)) {
+      path.lineTo(point.dx, point.dy);
+    }
+    canvas.drawPath(path, linePaint);
+
+    for (final point in points) {
+      canvas.drawCircle(point, 3, dotPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _TrendLinePainter oldDelegate) {
+    return oldDelegate.values != values;
   }
 }
 

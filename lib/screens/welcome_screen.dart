@@ -103,7 +103,7 @@ class WelcomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -114,7 +114,7 @@ class WelcomeScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 15,
                       fontStyle: FontStyle.italic,
-                      color: Colors.white,
+                      color: Colors.black,
                       height: 1.4,
                     ),
                   ),
@@ -137,7 +137,7 @@ class WelcomeScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.white70,
+                      color: Colors.black,
                       height: 1.4,
                     ),
                   ),
@@ -148,7 +148,7 @@ class WelcomeScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 52,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 74.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 104.0),
                       child: ElevatedButton(
                         onPressed: () {
                           Navigator.of(context)
