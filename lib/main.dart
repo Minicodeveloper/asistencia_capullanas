@@ -5,6 +5,7 @@ import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/students_list_screen.dart';
 import 'screens/alerts_screen.dart';
+import 'screens/reports_screen.dart';
 
 void main() {
   runApp(const AlertaEducativaApp());
@@ -31,11 +32,11 @@ class AlertaEducativaApp extends StatelessWidget {
         AppRoutes.dashboard: (context) => const DashboardScreen(),
         AppRoutes.studentsList: (context) => const StudentsListScreen(),
         AppRoutes.alerts: (context) => const AlertsScreen(),
+        AppRoutes.reports: (context) => const ReportsScreen(),
 
         // Se irán agregando a medida que creemos cada pantalla:
         // AppRoutes.studentDetail: (context) => const StudentDetailScreen(),
         // AppRoutes.riskAnalysis: (context) => const RiskAnalysisScreen(),
-        // AppRoutes.reports: (context) => const ReportsScreen(),
         // AppRoutes.communication: (context) => const CommunicationScreen(),
         // AppRoutes.closing: (context) => const ClosingScreen(),
       },
