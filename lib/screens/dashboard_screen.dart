@@ -127,10 +127,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Rol recibido desde login_screen.dart (puede ser null si se navegó
-    // directo a esta pantalla sin pasar por el login).
-    final roleLabel = ModalRoute.of(context)?.settings.arguments as String?;
-    final greeting = roleLabel != null ? '¡Hola, $roleLabel!' : '¡Hola!';
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final String? roleLabel = args is Map ? args['role']?.toString() : args?.toString();
+    final greeting = (roleLabel != null && roleLabel.isNotEmpty) ? '¡Hola, $roleLabel!' : '¡Hola!';
 
     final stats = <_StatCardData>[
       _StatCardData(
