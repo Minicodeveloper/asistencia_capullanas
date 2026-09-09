@@ -1,36 +1,57 @@
 import 'package:flutter/material.dart';
 
-enum RiskLevel { todos, bajo, medio, alto }
+enum RiskLevel { todos, alto, medio, bajo }
 
 extension RiskLevelStyle on RiskLevel {
-  Color get color {
-    switch (this) {
-      case RiskLevel.todos:
-        return const Color(0xFF1565C0);
-      case RiskLevel.bajo:
-        return const Color(0xFF2E7D32);
-      case RiskLevel.medio:
-        return const Color(0xFFF9A825);
-      case RiskLevel.alto:
-        return const Color(0xFFC62828);
-    }
-  }
-
   String get label {
     switch (this) {
       case RiskLevel.todos:
         return 'Todos';
-      case RiskLevel.bajo:
-        return 'Riesgo bajo';
-      case RiskLevel.medio:
-        return 'Riesgo medio';
       case RiskLevel.alto:
         return 'Riesgo alto';
+      case RiskLevel.medio:
+        return 'Riesgo medio';
+      case RiskLevel.bajo:
+        return 'Riesgo bajo';
+    }
+  }
+
+  String get badgeText {
+    switch (this) {
+      case RiskLevel.todos:
+        return 'Todos';
+      case RiskLevel.alto:
+        return 'Alto';
+      case RiskLevel.medio:
+        return 'Medio';
+      case RiskLevel.bajo:
+        return 'Bajo';
+    }
+  }
+
+  Color get badgeColor {
+    switch (this) {
+      case RiskLevel.todos:
+        return const Color(0xFF0038FF);
+      case RiskLevel.alto:
+        return const Color(0xFFFF1744);
+      case RiskLevel.medio:
+        return const Color(0xFFFFEA00);
+      case RiskLevel.bajo:
+        return const Color(0xFF00E676);
+    }
+  }
+
+  Color get textColor {
+    switch (this) {
+      case RiskLevel.medio:
+        return Colors.white;
+      default:
+        return Colors.white;
     }
   }
 }
 
-/// Modelo de datos para representar a un estudiante en la lista.
 class Student {
   final String id;
   final String name;
@@ -49,8 +70,6 @@ class Student {
   });
 }
 
-/// Pantalla 4: Lista de Estudiantes
-/// Permite buscar, filtrar por nivel de riesgo y acceder al perfil individual.
 class StudentsListScreen extends StatefulWidget {
   const StudentsListScreen({super.key});
 
@@ -64,12 +83,10 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
 
-  // TODO: reemplazar por datos reales desde la base de datos o servicio correspondiente.
-  // Aquí se deberían insertar los datos faltantes recuperados del repositorio de datos.
   final List<Student> _allStudents = const [
     Student(
       id: '1',
-      name: 'María López',
+      name: 'Maria Lopez',
       grade: '5° B',
       risk: RiskLevel.alto,
       attendancePercentage: 78.0,
@@ -85,7 +102,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '3',
-      name: 'Lucía García',
+      name: 'Lucia Garcia',
       grade: '5° A',
       risk: RiskLevel.bajo,
       attendancePercentage: 95.0,
@@ -109,27 +126,11 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '6',
-      name: 'Sofía Mendoza',
+      name: 'Sofia Mendoza',
       grade: '4° B',
       risk: RiskLevel.bajo,
       attendancePercentage: 96.0,
       tardinessCount: 0,
-    ),
-    Student(
-      id: '7',
-      name: 'Andrea Sánchez',
-      grade: '5° A',
-      risk: RiskLevel.medio,
-      attendancePercentage: 82.0,
-      tardinessCount: 5,
-    ),
-    Student(
-      id: '8',
-      name: 'Carlos Ramírez',
-      grade: '3° B',
-      risk: RiskLevel.alto,
-      attendancePercentage: 74.0,
-      tardinessCount: 8,
     ),
   ];
 
@@ -153,16 +154,15 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
 
     switch (index) {
       case 0:
-        Navigator.of(context).pushNamed('/dashboard');
+        Navigator.of(context).pushReplacementNamed('/dashboard');
         break;
       case 1:
-        // Ya se encuentra en la pantalla de estudiantes.
         break;
       case 2:
-        Navigator.of(context).pushNamed('/alerts');
+        Navigator.of(context).pushReplacementNamed('/alerts');
         break;
       case 3:
-        Navigator.of(context).pushNamed('/reports');
+        Navigator.of(context).pushReplacementNamed('/reports');
         break;
     }
   }
@@ -175,79 +175,114 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Se añadirá en un futuro la consulta asíncrona a la base de datos local o remota.
     final filtered = _filteredStudents;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('ALERTA EDUCATIVA IA'),
-        backgroundColor: const Color(0xFF1565C0),
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            tooltip: 'Notificaciones',
-            onPressed: () => Navigator.of(context).pushNamed('/alerts'),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: recargar datos desde el origen real (base de datos o API).
-          await Future.delayed(const Duration(milliseconds: 600));
-        },
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Barra superior (Top Bar)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              color: const Color(0xFF80D8FF),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF0038FF), size: 32),
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 4),
+                  Image.asset(
+                    'assets/images/capullanas_logo.png',
+                    height: 38,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(
+                        Icons.school_rounded,
+                        size: 32,
+                        color: Color(0xFF1565C0),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'ALERTA EDUCATIVA',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.black, size: 32),
+                    onPressed: () => Navigator.of(context).pushNamed('/alerts'),
+                  ),
+                ],
+              ),
+            ),
+
+            // Título "Mis estudiantes" y Buscador
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
                     'Mis estudiantes',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Listado y monitoreo de riesgo académico',
-                    style: TextStyle(fontSize: 14, color: Colors.black54),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Campo de búsqueda
-                  TextField(
-                    controller: _searchController,
-                    onChanged: (value) {
-                      setState(() => _searchQuery = value);
-                    },
-                    decoration: InputDecoration(
-                      hintText: 'Buscar estudiante...',
-                      hintStyle: const TextStyle(fontSize: 14, color: Colors.black38),
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF1565C0)),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 20),
-                              onPressed: () {
-                                _searchController.clear();
-                                setState(() => _searchQuery = '');
-                              },
-                            )
-                          : const Icon(Icons.tune_outlined, color: Colors.black45),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.black12),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Colors.black12),
-                      ),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1B365D),
                     ),
                   ),
                   const SizedBox(height: 12),
 
-                  // Filtros por nivel de riesgo
+                  // Buscador + Botón Filtro
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          height: 42,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE0E0E0),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: (value) {
+                              setState(() => _searchQuery = value);
+                            },
+                            style: const TextStyle(fontSize: 15),
+                            decoration: const InputDecoration(
+                              hintText: 'Buscar estudiante......',
+                              hintStyle: TextStyle(color: Colors.black45, fontSize: 14),
+                              prefixIcon: Icon(Icons.search, color: Colors.black, size: 24),
+                              border: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Container(
+                        height: 42,
+                        width: 44,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFE0E0E0),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Icon(Icons.tune, color: Colors.black, size: 24),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+
+                  // Chips de filtro por riesgo
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -255,19 +290,26 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                         final isSelected = _selectedRiskFilter == risk;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8.0),
-                          child: ChoiceChip(
-                            label: Text(risk.label),
-                            selected: isSelected,
-                            onSelected: (selected) {
-                              if (selected) {
-                                setState(() => _selectedRiskFilter = risk);
-                              }
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() => _selectedRiskFilter = risk);
                             },
-                            selectedColor: risk.color.withValues(alpha: 0.15),
-                            labelStyle: TextStyle(
-                              fontSize: 12,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              color: isSelected ? risk.color : Colors.black87,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? const Color(0xFF0038FF)
+                                    : const Color(0xFFE0E0E0),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                risk.label,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.bold,
+                                  color: isSelected ? Colors.white : const Color(0xFF1565C0),
+                                ),
+                              ),
                             ),
                           ),
                         );
@@ -278,10 +320,14 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
               ),
             ),
 
-            // Encabezado de la tabla de estudiantes
+            // Encabezado de la tabla (Nombre, Grado, Riesgo)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: Colors.black.withValues(alpha: 0.04),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: const BoxDecoration(
+                color: Color(0xFFD0F0FF),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+              ),
               child: const Row(
                 children: [
                   Expanded(
@@ -289,9 +335,9 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                     child: Text(
                       'Nombre',
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0038FF),
                       ),
                     ),
                   ),
@@ -301,9 +347,9 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                       'Grado',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0038FF),
                       ),
                     ),
                   ),
@@ -313,9 +359,9 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                       'Riesgo',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: Colors.black54,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                        color: Color(0xFF0038FF),
                       ),
                     ),
                   ),
@@ -324,80 +370,89 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
               ),
             ),
 
-            // Lista filtrada
+            // Lista de estudiantes
             Expanded(
-              child: filtered.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'No se encontraron estudiantes',
-                        style: TextStyle(color: Colors.black45, fontSize: 14),
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: const BoxDecoration(
+                  color: Color(0xFFE0E0E0),
+                  borderRadius: BorderRadius.vertical(bottom: Radius.circular(12)),
+                ),
+                child: filtered.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No se encontraron estudiantes',
+                          style: TextStyle(color: Colors.black54, fontSize: 14),
+                        ),
+                      )
+                    : ListView.separated(
+                        padding: const EdgeInsets.all(8),
+                        itemCount: filtered.length,
+                        separatorBuilder: (context, index) => const Divider(
+                          height: 1,
+                          color: Colors.black26,
+                        ),
+                        itemBuilder: (context, index) {
+                          final student = filtered[index];
+                          return _StudentRowTile(
+                            student: student,
+                            onTap: () {
+                              Navigator.of(context).pushNamed(
+                                '/students/detail',
+                                arguments: student,
+                              );
+                            },
+                          );
+                        },
                       ),
-                    )
-                  : ListView.separated(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      itemCount: filtered.length,
-                      separatorBuilder: (context, index) => const Divider(
-                        height: 1,
-                        indent: 16,
-                        endIndent: 16,
-                        color: Colors.black12,
-                      ),
-                      itemBuilder: (context, index) {
-                        final student = filtered[index];
-                        return _StudentTile(
-                          student: student,
-                          onTap: () {
-                            // TODO: Se añadirá en un futuro el paso de parámetros a la pantalla de detalle del estudiante.
-                            Navigator.of(context).pushNamed(
-                              '/students/detail',
-                              arguments: student,
-                            );
-                          },
-                        );
-                      },
-                    ),
+              ),
             ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentTabIndex,
-        onTap: _onTabTapped,
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1565C0),
-        unselectedItemColor: Colors.black45,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Inicio',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.groups_outlined),
-            label: 'Estudiantes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none),
-            label: 'Alertas',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart_outlined),
-            label: 'Reportes',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        color: const Color(0xFFD0F0FF),
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _NavItem(
+              icon: Icons.home,
+              label: 'Inicio',
+              isSelected: _currentTabIndex == 0,
+              onTap: () => _onTabTapped(0),
+            ),
+            _NavItem(
+              icon: Icons.groups,
+              label: 'Estudiantes',
+              isSelected: _currentTabIndex == 1,
+              onTap: () => _onTabTapped(1),
+            ),
+            _NavItem(
+              icon: Icons.notifications,
+              label: 'Alertas',
+              isSelected: _currentTabIndex == 2,
+              onTap: () => _onTabTapped(2),
+            ),
+            _NavItem(
+              icon: Icons.bar_chart,
+              label: 'Reportes',
+              isSelected: _currentTabIndex == 3,
+              onTap: () => _onTabTapped(3),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-extension on Color {
-  withValues({required double alpha}) {}
-}
-
-class _StudentTile extends StatelessWidget {
+class _StudentRowTile extends StatelessWidget {
   final Student student;
   final VoidCallback onTap;
 
-  const _StudentTile({
+  const _StudentRowTile({
     required this.student,
     required this.onTap,
   });
@@ -407,71 +462,116 @@ class _StudentTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundColor: const Color(0xFF1565C0).withValues(alpha: 0.1),
-              child: Text(
-                student.name.isNotEmpty ? student.name[0] : 'E',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xFF1565C0),
-                ),
+            Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.black87, width: 2),
+                color: Colors.white,
+              ),
+              child: const Icon(
+                Icons.person,
+                size: 32,
+                color: Colors.black87,
               ),
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 10),
+
             Expanded(
               flex: 4,
               child: Text(
                 student.name,
                 style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF1B365D),
                 ),
               ),
             ),
+
             Expanded(
               flex: 2,
               child: Text(
                 student.grade,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 13,
-                  color: Colors.black54,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
             ),
+
             Expanded(
               flex: 3,
               child: Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: student.risk.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    color: student.risk.badgeColor,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    student.risk.label.replaceAll('Riesgo ', ''),
+                    student.risk.badgeText,
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 13,
                       fontWeight: FontWeight.bold,
-                      color: student.risk.color,
+                      color: student.risk.textColor,
                     ),
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+
+            const SizedBox(width: 4),
             const Icon(
               Icons.chevron_right,
-              color: Colors.black38,
-              size: 20,
+              color: Colors.black,
+              size: 28,
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? const Color(0xFF0038FF) : Colors.black45;
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              color: color,
+            ),
+          ),
+        ],
       ),
     );
   }
