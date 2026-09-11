@@ -7,6 +7,7 @@ import 'screens/students_list_screen.dart';
 import 'screens/alerts_screen.dart';
 import 'screens/reports_screen.dart';
 import 'screens/student_detail_screen.dart';
+import 'screens/communication_screen.dart';
 
 void main() {
   runApp(const AlertaEducativaApp());
@@ -35,10 +36,10 @@ class AlertaEducativaApp extends StatelessWidget {
         AppRoutes.alerts: (context) => const AlertsScreen(),
         AppRoutes.reports: (context) => const ReportsScreen(),
         AppRoutes.studentDetail: (context) => const StudentDetailScreen(),
+        AppRoutes.communication: (context) => const CommunicationScreen(),
 
         // Se irán agregando a medida que creemos cada pantalla:
         // AppRoutes.riskAnalysis: (context) => const RiskAnalysisScreen(),
-        // AppRoutes.communication: (context) => const CommunicationScreen(),
         // AppRoutes.closing: (context) => const ClosingScreen(),
       },
       // Ruta de respaldo si se navega a un nombre no registrado.

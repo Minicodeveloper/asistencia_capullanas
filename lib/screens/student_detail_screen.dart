@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../routes.dart';
 import 'students_list_screen.dart' show Student;
 
 class StudentDetailScreen extends StatefulWidget {
@@ -12,17 +13,28 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
   String _selectedTab = 'Resumen';
   final List<String> _tabs = const ['Resumen', 'Detalle', 'Historial'];
 
+  void _openCommunicationScreen(BuildContext context, String name, String grade) {
+    Navigator.of(context).pushNamed(
+      AppRoutes.communication,
+      arguments: {
+        'studentName': name,
+        'grade': grade,
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Obtiene los datos del estudiante pasados por la ruta si existen, o usa los valores por defecto.
     final studentArg = ModalRoute.of(context)?.settings.arguments;
     Student? student;
     if (studentArg is Student) {
       student = studentArg;
     }
 
-    final String studentName = student != null ? '${student.name} Ruiz' : 'Maria Lopez Ruiz';
-    final String studentGrade = student != null ? '${student.grade} - Secundaria' : '5° B - Secundaria';
+    final String studentName = student != null ? student.name : 'Maria Lopez';
+    final String studentFullName = student != null ? '${student.name} Ruiz' : 'Maria Lopez Ruiz';
+    final String studentGrade = student != null ? student.grade : '5° B';
+    final String studentGradeFull = student != null ? '${student.grade} - Secundaria' : '5° B - Secundaria';
     final String attendance = student != null ? '${student.attendancePercentage.toInt()}%' : '78%';
     final String tardiness = student != null ? '${student.tardinessCount}' : '6';
 
@@ -109,7 +121,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
 
                     // Nombre y Grado
                     Text(
-                      studentName,
+                      studentFullName,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 22,
@@ -119,12 +131,34 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      studentGrade,
+                      studentGradeFull,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF1B365D),
+                      ),
+                    ),
+                    const SizedBox(height: 14),
+
+                    // Botón directo a Comunicación
+                    SizedBox(
+                      width: double.infinity,
+                      height: 46,
+                      child: ElevatedButton.icon(
+                        onPressed: () => _openCommunicationScreen(context, studentName, studentGrade),
+                        icon: const Icon(Icons.chat_rounded, color: Colors.white, size: 22),
+                        label: const Text(
+                          'Enviar mensaje al apoderado',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4CAF50),
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -168,69 +202,136 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Cuadrícula 2x2 de métricas
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _MetricCard(
-                            icon: Icons.calendar_month_rounded,
-                            label: 'Asistencia',
-                            value: attendance,
-                            valueColor: const Color(0xFF0038FF),
+                    // Contenido según la pestaña seleccionada
+                    if (_selectedTab == 'Resumen') ...[
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _MetricCard(
+                              icon: Icons.calendar_month_rounded,
+                              label: 'Asistencia',
+                              value: attendance,
+                              valueColor: const Color(0xFF0038FF),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _MetricCard(
-                            icon: Icons.access_time_filled_rounded,
-                            label: 'Tardanza',
-                            value: tardiness,
-                            valueColor: const Color(0xFF0038FF),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _MetricCard(
+                              icon: Icons.access_time_filled_rounded,
+                              label: 'Tardanza',
+                              value: tardiness,
+                              valueColor: const Color(0xFF0038FF),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      const Row(
+                        children: [
+                          Expanded(
+                            child: _MetricCard(
+                              icon: Icons.show_chart_rounded,
+                              label: 'Promedio',
+                              value: '13.2',
+                              valueColor: Color(0xFF0038FF),
+                            ),
+                          ),
+                          SizedBox(width: 12),
+                          Expanded(
+                            child: _MetricCard(
+                              icon: Icons.groups_rounded,
+                              label: 'Participacion',
+                              value: 'Baja',
+                              valueColor: Color(0xFFFF1744),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
-                    const Row(
-                      children: [
-                        Expanded(
-                          child: _MetricCard(
-                            icon: Icons.show_chart_rounded,
-                            label: 'Promedio',
-                            value: '13.2',
-                            valueColor: Color(0xFF0038FF),
+                      const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Evolucion de Rendimiento',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B365D),
                           ),
-                        ),
-                        SizedBox(width: 12),
-                        Expanded(
-                          child: _MetricCard(
-                            icon: Icons.groups_rounded,
-                            label: 'Participacion',
-                            value: 'Baja',
-                            valueColor: Color(0xFFFF1744),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Título Evolución de Rendimiento
-                    const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Evolucion de Rendimiento',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1B365D),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Gráfico de línea de rendimiento
-                    const _PerformanceLineChart(),
+                      const SizedBox(height: 14),
+                      const _PerformanceLineChart(),
+                    ] else if (_selectedTab == 'Detalle') ...[
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F7FA),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Detalle Académico',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B365D)),
+                            ),
+                            SizedBox(height: 8),
+                            Text('• Inasistencias registradas: 4 días este mes', style: TextStyle(fontSize: 14)),
+                            Text('• Tardanzas acumuladas: 6 sesiones', style: TextStyle(fontSize: 14)),
+                            Text('• Observaciones del tutor: Muestra desatención en horas de la mañana', style: TextStyle(fontSize: 14)),
+                          ],
+                        ),
+                      ),
+                    ] else if (_selectedTab == 'Historial') ...[
+                      // TODO: Cargar historial de comunicaciones asociadas a este estudiante desde la base de datos real.
+                      Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F7FA),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.black12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Historial de Comunicaciones Enviadas',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF1B365D)),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.black12),
+                              ),
+                              child: const Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Para: Padre/ Madre de Familia', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF0038FF))),
+                                      Text('Hoy - 10:30 a.m.', style: TextStyle(fontSize: 11, color: Colors.black45)),
+                                    ],
+                                  ),
+                                  SizedBox(height: 6),
+                                  Text(
+                                    'Estimados padre de familia: Hemos detectado que Maria presenta inasistencias frecuentes y un descenso en su rendimiento academico...',
+                                    style: TextStyle(fontSize: 13, color: Colors.black87),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -310,7 +411,6 @@ class _PerformanceLineChart extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Stack(
         children: [
-          // Grid lines horizontales y verticales
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
@@ -319,13 +419,11 @@ class _PerformanceLineChart extends StatelessWidget {
             ),
           ),
 
-          // Línea de tendencia inclinada descendente y puntos rojos
           CustomPaint(
             size: const Size(double.infinity, 120),
             painter: _LineChartPainter(),
           ),
 
-          // Etiqueta '0' en el eje Y inferior
           const Positioned(
             left: 0,
             bottom: 22,
@@ -339,13 +437,12 @@ class _PerformanceLineChart extends StatelessWidget {
             ),
           ),
 
-          // Meses en el eje X
           Positioned(
             left: 10,
             right: 10,
             bottom: 0,
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: months.map((month) {
                 return Text(
                   month,
@@ -384,12 +481,10 @@ class _LineChartPainter extends CustomPainter {
       Offset(size.width - 20, size.height * 0.88),
     ];
 
-    // Dibuja las líneas entre puntos
     for (int i = 0; i < points.length - 1; i++) {
       canvas.drawLine(points[i], points[i + 1], linePaint);
     }
 
-    // Dibuja los puntos rojos
     for (final point in points) {
       canvas.drawCircle(point, 7.0, dotPaint);
     }

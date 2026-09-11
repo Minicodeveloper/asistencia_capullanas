@@ -68,6 +68,31 @@ class Student {
     required this.attendancePercentage,
     required this.tardinessCount,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'grade': grade,
+      'risk': risk.name,
+      'attendancePercentage': attendancePercentage,
+      'tardinessCount': tardinessCount,
+    };
+  }
+
+  factory Student.fromMap(Map<String, dynamic> map) {
+    return Student(
+      id: map['id']?.toString() ?? '',
+      name: map['name']?.toString() ?? '',
+      grade: map['grade']?.toString() ?? '',
+      risk: RiskLevel.values.firstWhere(
+        (r) => r.name == map['risk'],
+        orElse: () => RiskLevel.bajo,
+      ),
+      attendancePercentage: (map['attendancePercentage'] as num?)?.toDouble() ?? 0.0,
+      tardinessCount: (map['tardinessCount'] as num?)?.toInt() ?? 0,
+    );
+  }
 }
 
 class StudentsListScreen extends StatefulWidget {
