@@ -78,25 +78,6 @@ class WelcomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Logo / escudo del colegio, sin fondo blanco: solo el
-                  // logo (asume que el PNG ya tiene fondo transparente).
-                  SizedBox(
-                    width: 200,
-                    height: 180,
-                    child: Image.asset(
-                      'assets/images/logo_colegio.png',
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(
-                          Icons.shield_outlined,
-                          size: 56,
-                          color: Color(0xFF1565C0),
-                        );
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
                   const Text(
                     'Alerta Educativa',
                     textAlign: TextAlign.center,

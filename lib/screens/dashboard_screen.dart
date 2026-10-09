@@ -67,13 +67,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // TODO: reemplazar por datos reales desde la base de datos/API.
   final List<_AlertItem> _recentAlerts = const [
     _AlertItem(
-      studentName: 'María Ruiz',
+      studentName: 'Estudiante 1',
       grade: '5° B',
       description: 'Inasistencias frecuentes',
       risk: RiskLevel.alto,
     ),
     _AlertItem(
-      studentName: 'Camila Torres',
+      studentName: 'Estudiante 2',
       grade: '4° A',
       description: 'Bajo rendimiento académico',
       risk: RiskLevel.medio,
@@ -169,141 +169,141 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 0.5,
-        titleSpacing: 12,
-        title: Row(
+      body: SafeArea(
+        child: Column(
           children: [
-            SizedBox(
-              width: 32,
-              height: 32,
-              child: Image.asset(
-                'assets/images/capullanas_logo.png',
-                fit: BoxFit.contain,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.shield_outlined,
-                  color: Color(0xFF1565C0),
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Alerta Educativa',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Panel de control',
-                  style: TextStyle(fontSize: 11, color: Colors.black54),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_none),
-            tooltip: 'Notificaciones',
-            onPressed: () => Navigator.of(context).pushNamed('/alerts'),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          // TODO: recargar datos desde el origen real.
-          await Future.delayed(const Duration(milliseconds: 600));
-        },
-        child: ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            Text(
-              greeting,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Hoy cuidamos el futuro de nuestras estudiantes',
-              style: TextStyle(fontSize: 14, color: Colors.black54),
-            ),
-            const SizedBox(height: 20),
-
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 1.6,
-              children: stats.map((s) => _StatCard(data: s)).toList(),
-            ),
-            const SizedBox(height: 24),
-
-            const Text(
-              'Tendencia de asistencia',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Últimos 30 días',
-              style: TextStyle(fontSize: 12, color: Colors.black45),
-            ),
-            const SizedBox(height: 12),
+            // Barra superior (Top Bar)
             Container(
-              height: 140,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.black12),
-              ),
-              child: _attendanceTrend.isEmpty
-                  ? const Center(
-                      child: Text(
-                        'Sin datos de asistencia aún',
-                        style: TextStyle(color: Colors.black38, fontSize: 12),
-                      ),
-                    )
-                  : CustomPaint(
-                      size: Size.infinite,
-                      painter: _TrendLinePainter(values: _attendanceTrend),
-                    ),
-            ),
-            const SizedBox(height: 24),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Alertas recientes',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.of(context).pushNamed('/alerts'),
-                  child: const Text('Ver todas'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-
-            if (_recentAlerts.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text(
-                    'No hay alertas recientes',
-                    style: TextStyle(color: Colors.black45),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              color: const Color(0xFF80D8FF),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.menu, color: Color(0xFF0038FF), size: 32),
+                    onPressed: () {},
                   ),
+                  const SizedBox(width: 4),
+                  const Icon(
+                    Icons.school_rounded,
+                    size: 32,
+                    color: Color(0xFF1565C0),
+                  ),
+                  const SizedBox(width: 8),
+                  const Expanded(
+                    child: Text(
+                      'ALERTA EDUCATIVA',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.notifications, color: Colors.black, size: 32),
+                    onPressed: () => Navigator.of(context).pushNamed('/alerts'),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  // TODO: recargar datos desde el origen real.
+                  await Future.delayed(const Duration(milliseconds: 600));
+                },
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    Text(
+                      greeting,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Hoy cuidamos el futuro de nuestras estudiantes',
+                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                    ),
+                    const SizedBox(height: 20),
+
+                    GridView.count(
+                      crossAxisCount: 2,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 1.6,
+                      children: stats.map((s) => _StatCard(data: s)).toList(),
+                    ),
+                    const SizedBox(height: 24),
+
+                    const Text(
+                      'Tendencia de asistencia',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Últimos 30 días',
+                      style: TextStyle(fontSize: 12, color: Colors.black45),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      height: 140,
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.black12),
+                      ),
+                      child: _attendanceTrend.isEmpty
+                          ? const Center(
+                        child: Text(
+                          'Sin datos de asistencia aún',
+                          style: TextStyle(color: Colors.black38, fontSize: 12),
+                        ),
+                      )
+                          : CustomPaint(
+                        size: Size.infinite,
+                        painter: _TrendLinePainter(values: _attendanceTrend),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Alertas recientes',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pushNamed('/alerts'),
+                          child: const Text('Ver todas'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+
+                    if (_recentAlerts.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 24),
+                        child: Center(
+                          child: Text(
+                            'No hay alertas recientes',
+                            style: TextStyle(color: Colors.black45),
+                          ),
+                        ),
+                      )
+                    else
+                      ..._recentAlerts.map((alert) => _AlertTile(alert: alert)),
+                  ],
                 ),
-              )
-            else
-              ..._recentAlerts.map((alert) => _AlertTile(alert: alert)),
+              ),
+            ),
           ],
         ),
       ),

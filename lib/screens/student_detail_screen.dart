@@ -31,8 +31,8 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
       student = studentArg;
     }
 
-    final String studentName = student != null ? student.name : 'Maria Lopez';
-    final String studentFullName = student != null ? '${student.name} Ruiz' : 'Maria Lopez Ruiz';
+    final String studentName = student != null ? student.name : 'Estudiante 1';
+    final String studentFullName = student != null ? student.name : 'Estudiante 1';
     final String studentGrade = student != null ? student.grade : '5° B';
     final String studentGradeFull = student != null ? '${student.grade} - Secundaria' : '5° B - Secundaria';
     final String attendance = student != null ? '${student.attendancePercentage.toInt()}%' : '78%';
@@ -54,17 +54,10 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                   const SizedBox(width: 4),
-                  Image.asset(
-                    'assets/images/capullanas_logo.png',
-                    height: 38,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.school_rounded,
-                        size: 32,
-                        color: Color(0xFF1565C0),
-                      );
-                    },
+                  const Icon(
+                    Icons.school_rounded,
+                    size: 32,
+                    color: Color(0xFF1565C0),
                   ),
                   const SizedBox(width: 8),
                   const Expanded(
@@ -322,7 +315,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> {
                                   ),
                                   SizedBox(height: 6),
                                   Text(
-                                    'Estimados padre de familia: Hemos detectado que Maria presenta inasistencias frecuentes y un descenso en su rendimiento academico...',
+                                    'Estimados padre de familia: Hemos detectado que el estudiante presenta inasistencias frecuentes y un descenso en su rendimiento academico...',
                                     style: TextStyle(fontSize: 13, color: Colors.black87),
                                   ),
                                 ],
@@ -415,7 +408,7 @@ class _PerformanceLineChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: List.generate(
               3,
-              (index) => const Divider(height: 1, color: Colors.black26),
+                  (index) => const Divider(height: 1, color: Colors.black26),
             ),
           ),
 

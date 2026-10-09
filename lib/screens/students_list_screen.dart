@@ -86,7 +86,7 @@ class Student {
       name: map['name']?.toString() ?? '',
       grade: map['grade']?.toString() ?? '',
       risk: RiskLevel.values.firstWhere(
-        (r) => r.name == map['risk'],
+            (r) => r.name == map['risk'],
         orElse: () => RiskLevel.bajo,
       ),
       attendancePercentage: (map['attendancePercentage'] as num?)?.toDouble() ?? 0.0,
@@ -113,7 +113,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
   final List<Student> _allStudents = const [
     Student(
       id: '1',
-      name: 'Maria Lopez',
+      name: 'Estudiante 1',
       grade: '5° B',
       risk: RiskLevel.alto,
       attendancePercentage: 78.0,
@@ -121,7 +121,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '2',
-      name: 'Camila Torres',
+      name: 'Estudiante 2',
       grade: '4° A',
       risk: RiskLevel.medio,
       attendancePercentage: 85.0,
@@ -129,7 +129,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '3',
-      name: 'Lucia Garcia',
+      name: 'Estudiante 3',
       grade: '5° A',
       risk: RiskLevel.bajo,
       attendancePercentage: 95.0,
@@ -137,7 +137,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '4',
-      name: 'Valeria Ruiz',
+      name: 'Estudiante 4',
       grade: '4° C',
       risk: RiskLevel.bajo,
       attendancePercentage: 92.0,
@@ -145,7 +145,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '5',
-      name: 'Daniela Flores',
+      name: 'Estudiante 5',
       grade: '5° B',
       risk: RiskLevel.medio,
       attendancePercentage: 84.0,
@@ -153,7 +153,7 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
     ),
     Student(
       id: '6',
-      name: 'Sofia Mendoza',
+      name: 'Estudiante 6',
       grade: '4° B',
       risk: RiskLevel.bajo,
       attendancePercentage: 96.0,
@@ -164,8 +164,8 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
   List<Student> get _filteredStudents {
     return _allStudents.where((student) {
       final matchesSearch = student.name
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase()) ||
           student.grade.toLowerCase().contains(_searchQuery.toLowerCase());
 
       final matchesRisk = _selectedRiskFilter == RiskLevel.todos ||
@@ -338,17 +338,10 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                     onPressed: () {},
                   ),
                   const SizedBox(width: 4),
-                  Image.asset(
-                    'assets/images/capullanas_logo.png',
-                    height: 38,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.school_rounded,
-                        size: 32,
-                        color: Color(0xFF1565C0),
-                      );
-                    },
+                  const Icon(
+                    Icons.school_rounded,
+                    size: 32,
+                    color: Color(0xFF1565C0),
                   ),
                   const SizedBox(width: 8),
                   const Expanded(
@@ -534,31 +527,31 @@ class _StudentsListScreenState extends State<StudentsListScreen> {
                 ),
                 child: filtered.isEmpty
                     ? const Center(
-                        child: Text(
-                          'No se encontraron estudiantes',
-                          style: TextStyle(color: Colors.black54, fontSize: 14),
-                        ),
-                      )
+                  child: Text(
+                    'No se encontraron estudiantes',
+                    style: TextStyle(color: Colors.black54, fontSize: 14),
+                  ),
+                )
                     : ListView.separated(
-                        padding: const EdgeInsets.all(8),
-                        itemCount: filtered.length,
-                        separatorBuilder: (context, index) => const Divider(
-                          height: 1,
-                          color: Colors.black26,
-                        ),
-                        itemBuilder: (context, index) {
-                          final student = filtered[index];
-                          return _StudentRowTile(
-                            student: student,
-                            onTap: () {
-                              Navigator.of(context).pushNamed(
-                                '/students/detail',
-                                arguments: student,
-                              );
-                            },
-                          );
-                        },
-                      ),
+                  padding: const EdgeInsets.all(8),
+                  itemCount: filtered.length,
+                  separatorBuilder: (context, index) => const Divider(
+                    height: 1,
+                    color: Colors.black26,
+                  ),
+                  itemBuilder: (context, index) {
+                    final student = filtered[index];
+                    return _StudentRowTile(
+                      student: student,
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          '/students/detail',
+                          arguments: student,
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
             ),
             const SizedBox(height: 10),

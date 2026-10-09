@@ -49,7 +49,7 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
   int _bottomNavIndex = 0;
 
   String _selectedRecipient = 'Padre/ Madre de Familia';
-  String _selectedStudent = 'Maria Lopez - 5° B';
+  String _selectedStudent = 'Estudiante 1 - 5° B';
 
   final List<String> _recipients = const [
     'Padre/ Madre de Familia',
@@ -58,10 +58,10 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
   ];
 
   final List<String> _students = const [
-    'Maria Lopez - 5° B',
-    'Camila Torres - 4° A',
-    'Lucia Garcia - 5° A',
-    'Valeria Ruiz - 4° C',
+    'Estudiante 1 - 5° B',
+    'Estudiante 2 - 4° A',
+    'Estudiante 3 - 5° A',
+    'Estudiante 4 - 4° C',
   ];
 
   late TextEditingController _messageController;
@@ -71,17 +71,17 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
     const SentMessage(
       id: '1',
       recipient: 'Padre/ Madre de Familia',
-      studentInfo: 'Maria Lopez - 5° B',
+      studentInfo: 'Estudiante 1 - 5° B',
       message:
-          'Estimados padre de familia: Hemos detectado que Maria presenta inasistencias frecuentes y un descenso en su rendimiento academico. Les invitamos a una reunion para trabajar juntos en su bienestar escolar.',
+      'Estimados padre de familia: Hemos detectado que el estudiante presenta inasistencias frecuentes y un descenso en su rendimiento academico. Les invitamos a una reunion para trabajar juntos en su bienestar escolar.',
       timestamp: 'Hoy - 10:30 a.m.',
     ),
     const SentMessage(
       id: '2',
       recipient: 'Padre/ Madre de Familia',
-      studentInfo: 'Camila Torres - 4° A',
+      studentInfo: 'Estudiante 2 - 4° A',
       message:
-          'Estimado apoderado: Le informamos sobre el progreso positivo de Camila durante las últimas dos semanas en el curso de matemáticas.',
+      'Estimado apoderado: Le informamos sobre el progreso positivo del estudiante durante las últimas dos semanas en el curso de matemáticas.',
       timestamp: 'Ayer - 04:15 p.m.',
     ),
   ];
@@ -91,7 +91,7 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
     super.initState();
     _messageController = TextEditingController(
       text:
-          'Estimados padre de familia:\nHemos detectado que Maria presenta inasistencias frecuentes y un descenso en su rendimiento academico.Les invitamos a una reunion para trabajar juntos en su bienestar escolar.\n\n...',
+      'Estimados padre de familia:\nHemos detectado que el estudiante presenta inasistencias frecuentes y un descenso en su rendimiento academico.Les invitamos a una reunion para trabajar juntos en su bienestar escolar.\n\n...',
     );
   }
 
@@ -190,17 +190,10 @@ class _CommunicationScreenState extends State<CommunicationScreen> {
                     onPressed: () {},
                   ),
                   const SizedBox(width: 4),
-                  Image.asset(
-                    'assets/images/capullanas_logo.png',
-                    height: 38,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.school_rounded,
-                        size: 32,
-                        color: Color(0xFF1565C0),
-                      );
-                    },
+                  const Icon(
+                    Icons.school_rounded,
+                    size: 32,
+                    color: Color(0xFF1565C0),
                   ),
                   const SizedBox(width: 12),
                   const Text(

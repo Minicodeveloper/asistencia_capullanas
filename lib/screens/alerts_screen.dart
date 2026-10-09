@@ -100,28 +100,28 @@ class _AlertsScreenState extends State<AlertsScreen> {
   // correspondiente (API, base de datos local, etc.).
   final List<_AlertData> _allAlerts = const [
     _AlertData(
-      studentName: 'María López',
+      studentName: 'Estudiante 1',
       grade: '5°B',
       kind: AlertKind.riesgoAlto,
       description: 'Inasistencias frecuentes',
       timestamp: 'Hoy - 8:30 a.m.',
     ),
     _AlertData(
-      studentName: 'Camila Torres',
+      studentName: 'Estudiante 2',
       grade: '4°A',
       kind: AlertKind.riesgoMedio,
       description: 'Bajo rendimiento académico',
       timestamp: 'Hoy - 10:15 a.m.',
     ),
     _AlertData(
-      studentName: 'Andrea Sánchez',
+      studentName: 'Estudiante 3',
       grade: '5°A',
       kind: AlertKind.riesgoMedio,
       description: 'Tardanzas constantes',
       timestamp: 'Ayer - 4:30 p.m.',
     ),
     _AlertData(
-      studentName: 'Lucía García',
+      studentName: 'Estudiante 4',
       grade: '4°C',
       kind: AlertKind.mejora,
       description: 'Asistencia aumentó al 95%',

@@ -65,19 +65,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     color: Color(0xFF0038FF),
                     size: 32,
                   ),
-                  const SizedBox(width: 8),
-                  Image.asset(
-                    'assets/images/capullanas_logo.png',
-                    height: 38,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Icon(
-                        Icons.school_rounded,
-                        size: 32,
-                        color: Color(0xFF1565C0),
-                      );
-                    },
-                  ),
                   const SizedBox(width: 12),
                   const Text(
                     'REPORTES',
@@ -538,7 +525,7 @@ class _RiskBarChartWidget extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: List.generate(
                     5,
-                    (index) => const Divider(height: 1, color: Colors.black12),
+                        (index) => const Divider(height: 1, color: Colors.black12),
                   ),
                 ),
 
